@@ -1,7 +1,7 @@
 jCSS
 ====
 
-A library to dynamically create and manipulate CSS stylesheets.
+A small library to dynamically create and manipulate CSS stylesheets.
 
 Usage
 -----
@@ -30,8 +30,8 @@ Create a set of CSS properties and name the keys as you would do for an element.
 Compatibility
 -------------
 
-Is currently working on the latest Chrome and Firefox.
-It should be working on WebKit based browser.
+Is currently working on the latest Chrome, Firefox and Safari.
+IE is yet to be tested.
 
 To compile
 ----------
