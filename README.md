@@ -46,6 +46,12 @@ Then run in the working repository
 
 (Watch Compile Map Bare)
 
+To minify
+---------
+
+(note to self)
+
+uglifyjs -mc -o jCSS.min.js -- jCSS.js
 
 Todo
 ----
