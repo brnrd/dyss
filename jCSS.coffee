@@ -2,9 +2,9 @@ class Sheet
 
   constructor: ->
     style = document.createElement 'style'
-    isWebkit = !!window.webkitURL
-    isWebkit = isWebkit or 'WebkitAppearance' in document.documentElement.style
-    style.appendChild document.createTextNode '' if isWebkit
+    # isWebkit = !!window.webkitURL
+    # isWebkit = isWebkit or 'WebkitAppearance' in document.documentElement.style
+    # style.appendChild document.createTextNode '' if isWebkit
     document.head.appendChild style
     @sheet = style.sheet
 
@@ -31,14 +31,15 @@ class Sheet
     return
 
   addClass: (set) ->
-    name = '.' + @_getRandomName
-    @add name, set
+    name = @_getRandomName()
+    randomClass = '.' + name
+    @add randomClass, set
     name
 
   updateSet: (selector, set) ->
     item = @_getSelector selector
     if item is -1
-      @addSet selector, set
+      @add selector, set
     else
       for key, value of set
         item.style[key] = value
@@ -50,6 +51,7 @@ class Sheet
     cssedProperty = ''
     temp = proprety.split /(?=[A-Z])/
     if temp instanceof Array and temp.length is 2
+      temp[1] = temp[1].toLowerCase();
       cssedProperty = temp.join '-'
     else
       cssedProperty = temp
@@ -57,6 +59,7 @@ class Sheet
 
   _getSelector: (selector) ->
     rulesArray = @sheet.rules
+    rulesArray = @sheet.cssRules if not rulesArray
     return rule for rule in rulesArray when rule.selectorText is selector
     -1
 
