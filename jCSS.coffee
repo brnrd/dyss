@@ -2,9 +2,6 @@ class Sheet
 
   constructor: ->
     style = document.createElement 'style'
-    # isWebkit = !!window.webkitURL
-    # isWebkit = isWebkit or 'WebkitAppearance' in document.documentElement.style
-    # style.appendChild document.createTextNode '' if isWebkit
     document.head.appendChild style
     @sheet = style.sheet
 
