@@ -6,7 +6,7 @@ function setThings() {
   input.onkeyup = changeColor;
 
   function changeColor(event) {
-    var hex = input.value;
+    var hex = '#' + input.value;
     var regex = /^#(?:[0-9a-fA-F]{3}){1,2}$/;
     if (hex.match(regex)) {
       colorSet.color = hex;
