@@ -1,0 +1,19 @@
+{
+  "name": "dyss",
+  "description": "A small library to dynamically create and manipulate CSS stylesheets",
+  "main": "dist/dyss.min.js",
+  "authors": [
+    "Bernard Debecker <bernard.debecker@gmail.com>"
+  ],
+  "license": "Unlicence",
+  "homepage": "https://github.com/brnrd/jCSS",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "example/*"
+  ]
+}
