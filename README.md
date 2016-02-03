@@ -1,4 +1,4 @@
-jCSS
+dyss
 ====
 
 A small library to dynamically create and manipulate CSS stylesheets.
@@ -6,9 +6,9 @@ A small library to dynamically create and manipulate CSS stylesheets.
 Usage
 -----
 
-Import jCSS.js or jCSS.min.js at the end of the body.
+Import dyss.js or dyss.min.js at the end of the body.
 
-	<script type="text/javascript" src="jCSS.js"></script>
+	<script type="text/javascript" src="dyss.js"></script>
 
 Then in your JavaScript file, create a new stylesheet :
 

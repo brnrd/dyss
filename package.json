@@ -1,23 +1,23 @@
 {
-  "name": "jcss",
+  "name": "dyss",
   "version": "0.0.1",
   "description": "A small library to dynamically create and manipulate CSS stylesheets",
-  "main": "dist/jCSS.min.js",
+  "main": "dist/dyss.min.js",
   "directories": {
     "example": "example"
   },
   "scripts": {
     "build": "coffee -o dist/ -wcmb lib/",
-    "uglify": "uglifyjs -mc --in-source-map dist/jCSS.js.map -o dist/jCSS.min.js -- dist/jCSS.js"
+    "uglify": "uglifyjs -mc --in-source-map dist/dyss.js.map -o dist/dyss.min.js -- dist/dyss.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/brnrd/jCSS.git"
+    "url": "git+https://github.com/brnrd/dyss.git"
   },
   "author": "Bernard Debecker",
   "license": "Unlicence",
   "bugs": {
-    "url": "https://github.com/brnrd/jCSS/issues"
+    "url": "https://github.com/brnrd/dyss/issues"
   },
-  "homepage": "https://github.com/brnrd/jCSS#readme"
+  "homepage": "https://github.com/brnrd/dyss#readme"
 }
