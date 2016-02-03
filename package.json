@@ -1,0 +1,23 @@
+{
+  "name": "jcss",
+  "version": "0.0.1",
+  "description": "A small library to dynamically create and manipulate CSS stylesheets",
+  "main": "dist/jCSS.min.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "build": "coffee -o dist/ -wcmb lib/",
+    "uglify": "uglifyjs -mc --in-source-map dist/jCSS.js.map -o dist/jCSS.min.js -- dist/jCSS.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brnrd/jCSS.git"
+  },
+  "author": "Bernard Debecker",
+  "license": "Unlicence",
+  "bugs": {
+    "url": "https://github.com/brnrd/jCSS/issues"
+  },
+  "homepage": "https://github.com/brnrd/jCSS#readme"
+}

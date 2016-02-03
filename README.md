@@ -33,25 +33,23 @@ Compatibility
 Is currently working on the latest Chrome, Firefox and Safari.
 IE is yet to be tested.
 
-To compile
+To build
 ----------
 
 Install Coffeescript :
 
-  sudo npm install -g coffee-script
+  npm install -g coffee-script
 
 Then run in the working repository
 
-  coffee -wcmb ./
+  npm run build
 
 (Watch Compile Map Bare)
 
 To minify
 ---------
 
-(note to self)
-
-uglifyjs -mc -o jCSS.min.js -- jCSS.js
+  npm run uglify
 
 Todo
 ----
