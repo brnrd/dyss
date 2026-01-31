@@ -1,5 +1,9 @@
-.node_modules
-*.map
-.DS_Store
 node_modules/
+example/node_modules
+.DS_Store
+
+# build output (published to npm, but not committed)
 dist/
+
+# local tooling
+npm-debug.log*

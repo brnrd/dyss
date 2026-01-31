@@ -1,5 +1,7 @@
 # dyss
 
+![npm](https://img.shields.io/npm/v/dyss) ![npm](https://img.shields.io/npm/dm/dyss)
+
 A tiny utility to dynamically create and update CSS stylesheets from JavaScript.
 
 `dyss` lets you generate CSS rules at runtime, update them efficiently, and avoid inline styles while keeping your UI fully dynamic.
@@ -8,38 +10,16 @@ This project is a modernised ES module version of the original CoffeeScript impl
 
 ---
 
-## Installation
+## Install from npm
 
-Copy the built file into your project:
-
+```bash
+npm install dyss
 ```
-lib/dyss.js
-```
-
-(or the minified version you generate yourself, see *Build* below)
-
----
-
-## Usage (ES modules – modern browsers)
-
-Load your code as a module and import `Sheet`.
-
-```html
-<script type="module" src="./demo.js"></script>
-```
-
-```js
-import Sheet from './lib/dyss.js'
-
-const sheet = new Sheet()
-```
-
----
 
 ## Basic example
 
 ```js
-import Sheet from './lib/dyss.js'
+import Sheet from 'dyss'
 
 const sheet = new Sheet()
 
@@ -174,7 +154,7 @@ npm install --save-dev esbuild
 Build and minify:
 
 ```bash
-npx esbuild src/dyss.js   --bundle   --minify   --format=esm   --target=es2019   --outfile=dist/dyss.min.js
+npx esbuild src/dyss.js --bundle --minify --format=esm --target=es2019 --outfile=dist/dyss.min.js
 ```
 
 ---

@@ -1,25 +1,41 @@
 {
   "name": "dyss",
-  "version": "0.0.2",
-  "description": "A small library to dynamically create and manipulate CSS stylesheets",
-  "main": "dist/dyss.min.js",
-  "directories": {
-    "example": "example"
+  "version": "1.0.0",
+  "description": "Dynamically create and update CSS stylesheets from JS",
+  "license": "Unlicense",
+  "author": "Bernard Debecker",
+  "type": "module",
+  "main": "./dist/dyss.js",
+  "exports": {
+    ".": "./dist/dyss.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
   "scripts": {
-    "build": "esbuild src/dyss.js --bundle --minify --format=esm --target=es2019 --outfile=dist/dyss.min.js"
+    "build": "npm run clean && npm run build:esm && npm run build:min",
+    "build:esm": "esbuild src/dyss.js --bundle --format=esm --target=es2019 --outfile=dist/dyss.js",
+    "build:min": "esbuild src/dyss.js --bundle --minify --format=esm --target=es2019 --outfile=dist/dyss.min.js",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "esbuild": "^0.27.2"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/brnrd/dyss.git"
   },
-  "author": "Bernard Debecker",
-  "license": "Unlicence",
   "bugs": {
     "url": "https://github.com/brnrd/dyss/issues"
   },
   "homepage": "https://github.com/brnrd/dyss#readme",
-  "devDependencies": {
-    "esbuild": "^0.27.2"
-  }
+  "keywords": [
+    "css",
+    "stylesheet",
+    "dynamic-css"
+  ]
 }
