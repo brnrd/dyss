@@ -1,53 +1,68 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>dyss example</title>
-	<link rel="stylesheet" type="text/css" href="example.css">
-</head>
-	<body>
-		<div id="container">
-			<header class="header">
-				This is the header with navigation things
-			</header>
-			<section class="section">
-				<h1 class="main-title user-defined">Username</h1>
-				<ul class="content-list">
-					<li class="list-item">
-						<span class="elem-title">Something</span>
-						<div class="elem-content user-defined">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-						</div>
-					</li>
-					<li class="list-item user-defined">
-						<span class="elem-title">Something</span>
-						<div class="elem-content user-defined">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-						</div>
-					</li>
-					<li class="list-item user-defined">
-						<span class="elem-title">Something</span>
-						<div class="elem-content user-defined">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-						</div>
-					</li>
-					<li class="list-item user-defined">
-						<span class="elem-title">Something</span>
-						<div class="elem-content user-defined">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-						</div>
-					</li>
-				</ul>
-				<span class="options">
-					<input type="text" id="color-input" class="user-defined" placeholder="Hex value">
-				</span>
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>dyss modern demo</title>
+	</head>
 
+	<body>
+		<div style="max-width: 720px; margin: 32px auto; padding: 0 16px; font-family: system-ui, sans-serif;">
+			<h1 style="margin: 0 0 16px;">dyss demo</h1>
+
+			<section style="display: grid; gap: 12px; grid-template-columns: 1fr 1fr; margin-bottom: 16px;">
+				<label style="display: grid; gap: 6px;">
+					<span>Width</span>
+					<input id="width" type="range" min="180" max="640" value="360" />
+				</label>
+
+				<label style="display: grid; gap: 6px;">
+					<span>Radius</span>
+					<input id="radius" type="range" min="0" max="48" value="16" />
+				</label>
+
+				<label style="display: grid; gap: 6px;">
+					<span>Background</span>
+					<input id="bg" type="color" value="#1f2937" />
+				</label>
+
+				<label style="display: grid; gap: 6px;">
+					<span>Text</span>
+					<input id="fg" type="color" value="#f9fafb" />
+				</label>
+
+				<label style="display: grid; gap: 6px;">
+					<span>Shadow</span>
+					<select id="shadow">
+						<option value="none">none</option>
+						<option value="0 4px 14px rgba(0,0,0,0.25)" selected>soft</option>
+						<option value="0 10px 30px rgba(0,0,0,0.35)">strong</option>
+					</select>
+				</label>
+
+				<label style="display: grid; gap: 6px;">
+					<span>Font size</span>
+					<select id="size">
+						<option value="14px">14px</option>
+						<option value="16px" selected>16px</option>
+						<option value="18px">18px</option>
+						<option value="20px">20px</option>
+					</select>
+				</label>
 			</section>
-			<footer class="footer">
-				This is the footer with all the boring shit and things that takes forever to load
-			</footer>
+
+			<div id="previewWrap" style="display: grid; place-items: start; gap: 12px;">
+				<div id="preview">
+					<h2 style="margin: 0 0 6px;">Preview card</h2>
+					<p style="margin: 0;">
+						Change the controls to update the stylesheet dynamically.
+					</p>
+				</div>
+
+				<small id="className" style="opacity: 0.7;"></small>
+			</div>
 		</div>
 
-		<script type="text/javascript" src="../dist/dyss.min.js"></script>
-		<script type="text/javascript" src="example.js"></script>
+		<script type="module" src="./demo.js"></script>
 	</body>
 </html>

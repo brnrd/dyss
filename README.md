@@ -1,93 +1,184 @@
-dyss
-====
+# dyss
 
-A small library to dynamically create and manipulate CSS stylesheets.
+A tiny utility to dynamically create and update CSS stylesheets from JavaScript.
 
-Usage
------
+`dyss` lets you generate CSS rules at runtime, update them efficiently, and avoid inline styles while keeping your UI fully dynamic.
 
-Import dyss.js or dyss.min.js at the end of the body.
+This project is a modernised ES module version of the original CoffeeScript implementation.
 
-	<script type="text/javascript" src="dyss.js"></script>
+---
 
-Then in your JavaScript file, create a new stylesheet :
+## Installation
 
-	var sheet = new Sheet();
+Copy the built file into your project:
 
-Create a set of CSS properties and name the keys as you would do for an element.style. and add it to the stylesheet :
+```
+lib/dyss.js
+```
 
-	var set = {};
-	set.width = '100px';
-	set.position = 'absolute';
-	set.height = '100px';
-	set.top = '100px';
-	set.left = '100px';
-	set.backgroundColor = 'red';
-	set.paddingTop = '10px';
+(or the minified version you generate yourself, see *Build* below)
 
-	sheet.add('.test', set);
+---
 
-Compatibility
--------------
+## Usage (ES modules – modern browsers)
 
-Is currently working on the latest Chrome, Firefox and Safari.
-IE is yet to be tested.
+Load your code as a module and import `Sheet`.
 
-To build
-----------
+```html
+<script type="module" src="./demo.js"></script>
+```
 
-Install Coffeescript :
+```js
+import Sheet from './lib/dyss.js'
 
-  npm install -g coffee-script
+const sheet = new Sheet()
+```
 
-Then run in the working repository
+---
 
-  npm run build
+## Basic example
 
-(Watch Compile Map Bare)
+```js
+import Sheet from './lib/dyss.js'
 
-To minify
----------
+const sheet = new Sheet()
 
-  npm run uglify
+sheet.add('.box', {
+	width: '120px',
+	height: '120px',
+	backgroundColor: 'red',
+	position: 'absolute',
+	top: '40px',
+	left: '40px'
+})
+```
 
-Todo
-----
+This creates a real stylesheet and inserts a CSS rule for `.box`.
 
-- Add doc
-- Comment the code
-- Add functions
-- Add tests
-- Add precise compatibility list
-- Do a whole lot of other usefull things
-- Support pseudo elements
+---
 
-Licence
--------
+## Create a dynamic class
 
-This is free and unencumbered software released into the public domain.
+You can generate a unique class name and reuse it later.
 
-Anyone is free to copy, modify, publish, use, compile, sell, or
-distribute this software, either in source code form or as a compiled
-binary, for any purpose, commercial or non-commercial, and by any
-means.
+```js
+const className = sheet.addClass({
+	padding: '16px',
+	backgroundColor: '#1f2937',
+	color: 'white',
+	borderRadius: '12px'
+})
 
-In jurisdictions that recognize copyright laws, the author or authors
-of this software dedicate any and all copyright interest in the
-software to the public domain. We make this dedication for the benefit
-of the public at large and to the detriment of our heirs and
-successors. We intend this dedication to be an overt act of
-relinquishment in perpetuity of all present and future rights to this
-software under copyright law.
+// Apply it to any element
+element.classList.add(className)
+```
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
+---
 
-For more information, please refer to <http://unlicense.org>
+## Update an existing rule
 
+```js
+sheet.updateSet(`.${className}`, {
+	backgroundColor: '#2563eb',
+	borderRadius: '24px'
+})
+```
 
+Only the rule inside the stylesheet is modified, not the element styles.
+
+---
+
+## API
+
+### new Sheet()
+
+Creates a new `<style>` element and an associated stylesheet.
+
+---
+
+### sheet.add(selector, set)
+
+Adds a rule to the stylesheet.
+
+```js
+sheet.add('.card', {
+	width: '200px',
+	backgroundColor: 'black'
+})
+```
+
+The keys must use the same naming convention as `element.style`
+(camelCase, for example `backgroundColor`, `borderRadius`, etc.).
+
+---
+
+### sheet.addClass(set) → string
+
+Creates a new class with a random name and returns it.
+
+```js
+const cls = sheet.addClass({ color: 'red' })
+```
+
+---
+
+### sheet.updateSet(selector, set)
+
+Updates an existing rule.
+
+If the selector does not exist yet, it is created automatically.
+
+---
+
+### sheet.addMediaAttribute(value)
+
+Sets the `media` attribute on the underlying `<style>` element.
+
+```js
+sheet.addMediaAttribute('(max-width: 600px)')
+```
+
+---
+
+## Important note about local development
+
+When using ES modules, your files must be served over HTTP.
+
+Opening the HTML file directly with `file://` will not work in modern browsers.
+
+For example:
+
+```bash
+cd example
+python3 -m http.server 8000
+```
+
+Then open:
+
+```
+http://localhost:8000/
+```
+
+---
+
+## Build and minify
+
+This project uses `esbuild`.
+
+Install it:
+
+```bash
+npm install --save-dev esbuild
+```
+
+Build and minify:
+
+```bash
+npx esbuild src/dyss.js   --bundle   --minify   --format=esm   --target=es2019   --outfile=dist/dyss.min.js
+```
+
+---
+
+## Browser support
+
+Works in all modern evergreen browsers (Chrome, Firefox, Safari, Edge).
