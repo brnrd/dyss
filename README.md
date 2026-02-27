@@ -8,6 +8,8 @@ A tiny utility to dynamically create and update CSS stylesheets from JavaScript.
 
 This project is a modernised ES module version of the original CoffeeScript implementation.
 
+For live examples and backstory, see https://vegetalope.com/build/dyss/.
+
 **Documentation:** The source is fully documented with JSDoc. In your editor you get parameter types, return types, and short examples on hover. The API section below is a quick reference; for details, open `src/dyss.js` or rely on your IDE.
 
 ---
