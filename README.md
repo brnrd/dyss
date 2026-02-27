@@ -37,6 +37,12 @@ sheet.add('.box', {
 
 This creates a real stylesheet and inserts a CSS rule for `.box`.
 
+If you want a constructable stylesheet that is also registered in `document.adoptedStyleSheets`, use:
+
+```js
+const constructedSheet = new Sheet({ mode: 'constructed' })
+```
+
 ---
 
 ## Create a dynamic class
@@ -76,7 +82,14 @@ Quick reference. JSDoc in the source provides types and examples for your editor
 
 ### new Sheet()
 
-Creates a new `<style>` element and an associated stylesheet.
+Creates a stylesheet in one of two modes:
+
+- `new Sheet()` or `new Sheet({ mode: 'style-tag' })`
+  Creates a `<style>` element in `document.head` and uses its `CSSStyleSheet`. This is the default for broad compatibility.
+- `new Sheet({ mode: 'constructed' })`
+  Creates a constructable stylesheet with `new CSSStyleSheet()` and registers it in `document.adoptedStyleSheets`.
+
+Use `style-tag` for the classic DOM-backed approach and the best legacy compatibility. Use `constructed` when you want a sheet that can be shared through `document.adoptedStyleSheets` or adopted by shadow roots. See [MDN: `Document.adoptedStyleSheets`](https://developer.mozilla.org/en-US/docs/Web/API/Document/adoptedStyleSheets).
 
 ---
 
@@ -107,17 +120,15 @@ const cls = sheet.addClass({ color: 'red' })
 
 ---
 
-### sheet.updateSet(selector, set)
+### sheet.getSheet() → CSSStyleSheet | null
 
-Updates an existing rule.
-
-If the selector does not exist yet, it is created automatically.
+Returns the underlying stylesheet instance.
 
 ---
 
 ### sheet.addMediaAttribute(value)
 
-Sets the `media` attribute on the underlying `<style>` element.
+Sets the `media` attribute on the underlying `<style>` element. This is only available in `style-tag` mode.
 
 ```js
 sheet.addMediaAttribute('(max-width: 600px)')
@@ -189,7 +200,7 @@ sheet.removeClass(cls)
 
 ### sheet.destroy()
 
-Removes the `<style>` element from the document and nulls the sheet reference. Call when cleaning up (e.g. component unmount).
+Removes the `<style>` element or unregisters the constructed stylesheet, then nulls the instance references.
 
 ---
 
@@ -248,4 +259,6 @@ npx esbuild src/dyss.js --bundle --minify --format=esm --target=es2019 --outfile
 
 ## Browser support
 
-Works in all modern evergreen browsers (Chrome, Firefox, Safari, Edge).
+`style-tag` mode works in modern evergreen browsers.
+
+`constructed` mode requires `document.adoptedStyleSheets` and constructable `CSSStyleSheet` support.

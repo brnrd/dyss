@@ -7,6 +7,7 @@ describe('Sheet', () => {
 	beforeEach(() => {
 		// Clear any previous style elements from head so tests don't interfere
 		document.head.querySelectorAll('style').forEach((el) => el.remove())
+		document.adoptedStyleSheets = []
 		sheet = new Sheet()
 	})
 
@@ -21,6 +22,25 @@ describe('Sheet', () => {
 			expect(sheet.sheet).toBeDefined()
 			expect(sheet.getSheet()).toBe(sheet.sheet)
 		})
+
+		it('defaults to style-tag mode', () => {
+			expect(sheet.mode).toBe('style-tag')
+		})
+
+		it('does not register style-tag sheets in document.adoptedStyleSheets', () => {
+			expect(document.adoptedStyleSheets).toHaveLength(0)
+		})
+
+		it('supports constructed mode by registering a constructable sheet', () => {
+			const constructed = new Sheet({ mode: 'constructed' })
+			expect(constructed._style).toBeNull()
+			expect(constructed.sheet).toBeInstanceOf(CSSStyleSheet)
+			expect(document.adoptedStyleSheets).toContain(constructed.sheet)
+		})
+
+		it('throws for unknown modes', () => {
+			expect(() => new Sheet({ mode: 'invalid' })).toThrow('Unknown Sheet mode')
+		})
 	})
 
 	describe('addMediaAttribute', () => {
@@ -33,6 +53,11 @@ describe('Sheet', () => {
 			sheet.addMediaAttribute('screen')
 			sheet.addMediaAttribute('(max-width: 600px)')
 			expect(sheet._style.getAttribute('media')).toBe('(max-width: 600px)')
+		})
+
+		it('throws in constructed mode', () => {
+			const constructed = new Sheet({ mode: 'constructed' })
+			expect(() => constructed.addMediaAttribute('print')).toThrow('style-tag mode')
 		})
 	})
 
@@ -200,6 +225,13 @@ describe('Sheet', () => {
 			sheet.destroy()
 			expect(sheet._style).toBeNull()
 			expect(sheet.sheet).toBeNull()
+		})
+
+		it('unregisters constructed sheets from document.adoptedStyleSheets', () => {
+			const constructed = new Sheet({ mode: 'constructed' })
+			expect(document.adoptedStyleSheets).toContain(constructed.sheet)
+			constructed.destroy()
+			expect(document.adoptedStyleSheets).not.toContain(constructed.sheet)
 		})
 	})
 

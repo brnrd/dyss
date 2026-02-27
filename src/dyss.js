@@ -2,14 +2,37 @@
 
 /**
  * Dynamically create and update a CSS stylesheet from JavaScript.
- * Creates a `<style>` element, appends it to `document.head`, and exposes methods to add, update, and remove rules.
+ * Creates either a DOM-backed `<style>` sheet or a constructed stylesheet and exposes
+ * methods to add, update, and remove rules.
  * @example
  * const sheet = new Sheet()
  * sheet.add('.box', { width: '100px', backgroundColor: 'red' })
  */
 export default class Sheet {
-	/** Creates a new `<style>` element and an associated CSSStyleSheet. */
-	constructor() {
+	/**
+	 * Creates a stylesheet in one of two modes:
+	 * - `style-tag` (default, for broad compatibility): injects a `<style>` element into `document.head`
+	 * - `constructed`: creates a constructable stylesheet and registers it in `document.adoptedStyleSheets`
+	 * @param {{ mode?: 'style-tag' | 'constructed' }} [options]
+	 */
+	constructor(options = {}) {
+		const { mode = 'style-tag' } = options
+		this.mode = mode
+		this._style = null
+
+		if (mode === 'constructed') {
+			if (typeof CSSStyleSheet !== 'function' || !('adoptedStyleSheets' in document)) {
+				throw new Error('Constructed stylesheet mode requires CSSStyleSheet and document.adoptedStyleSheets support.')
+			}
+			this.sheet = new CSSStyleSheet()
+			document.adoptedStyleSheets = [...document.adoptedStyleSheets, this.sheet]
+			return
+		}
+
+		if (mode !== 'style-tag') {
+			throw new Error(`Unknown Sheet mode: ${mode}`)
+		}
+
 		const style = document.createElement('style')
 		document.head.appendChild(style)
 
@@ -24,6 +47,9 @@ export default class Sheet {
 	 * sheet.addMediaAttribute('(max-width: 600px)')
 	 */
 	addMediaAttribute(mediaAttribute) {
+		if (!this._style) {
+			throw new Error('addMediaAttribute() is only available in style-tag mode.')
+		}
 		this._style.setAttribute('media', mediaAttribute)
 	}
 
@@ -155,14 +181,19 @@ export default class Sheet {
 	}
 
 	/**
-	 * Removes the `<style>` element from the document and nulls the sheet reference. Call when cleaning up (e.g. component unmount).
+	 * Removes the underlying `<style>` element or unregisters the constructed stylesheet,
+	 * then nulls the instance references. Call when cleaning up (e.g. component unmount).
 	 * @example
 	 * sheet.destroy()
 	 */
 	destroy() {
+		if (this.sheet && 'adoptedStyleSheets' in document) {
+			document.adoptedStyleSheets = document.adoptedStyleSheets.filter((sheet) => sheet !== this.sheet)
+		}
 		if (this._style && this._style.parentNode) {
 			this._style.remove()
 		}
+		this.mode = null
 		this._style = null
 		this.sheet = null
 	}
