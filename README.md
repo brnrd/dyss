@@ -10,7 +10,8 @@ This project is a modernised ES module version of the original CoffeeScript impl
 
 For live examples and backstory, see https://vegetalope.com/build/dyss/.
 
-**Documentation:** The source is fully documented with JSDoc. In your editor you get parameter types, return types, and short examples on hover. The API section below is a quick reference; for details, open `src/dyss.js` or rely on your IDE.
+**Documentation:** Read the latest published docs at https://vegetalope.com/build/dyss/docs/.
+The source is also documented with JSDoc, so your editor will still show parameter types, return types, and examples on hover.
 
 ---
 
@@ -80,139 +81,211 @@ Only the rule inside the stylesheet is modified, not the element styles.
 
 ## API
 
-Quick reference. JSDoc in the source provides types and examples for your editor.
+Quick reference based on the published docs. The current public surface is 15 items total: 2 instance properties and 13 public methods.
 
-### new Sheet()
+### `sheet.mode`
 
-Creates a stylesheet in one of two modes:
+Stores the active creation mode for the instance.
 
-- `new Sheet()` or `new Sheet({ mode: 'style-tag' })`
-  Creates a `<style>` element in `document.head` and uses its `CSSStyleSheet`. This is the default for broad compatibility.
-- `new Sheet({ mode: 'constructed' })`
-  Creates a constructable stylesheet with `new CSSStyleSheet()` and registers it in `document.adoptedStyleSheets`.
+- Starts as `style-tag` by default unless you pass a different mode to the constructor.
+- After `destroy()`, dyss sets this property to `null`.
 
-Use `style-tag` for the classic DOM-backed approach and the best legacy compatibility. Use `constructed` when you want a sheet that can be shared through `document.adoptedStyleSheets` or adopted by shadow roots. See [MDN: `Document.adoptedStyleSheets`](https://developer.mozilla.org/en-US/docs/Web/API/Document/adoptedStyleSheets).
+### `sheet.sheet`
 
----
+Holds the underlying native stylesheet object used for rule insertion and lookup.
 
-### sheet.add(selector, set, index?)
+- This is the same object returned by `getSheet()`.
+- After `destroy()`, dyss clears the property and sets it to `null`.
 
-Adds a rule to the stylesheet. Optionally pass `index` to insert at a specific position (default is append).
+### `new Sheet(options?: { mode?: 'style-tag' | 'constructed' })`
+
+Creates a stylesheet instance in the browser and stores the underlying `CSSStyleSheet` on the instance.
+
+- `style-tag` is the default and injects a real `<style>` element into `document.head`.
+- `constructed` uses `new CSSStyleSheet()` and appends it to `document.adoptedStyleSheets`.
+- Constructed mode throws if the current browser does not support constructable stylesheets.
+
+```js
+import Sheet from 'dyss'
+
+const sheet = new Sheet()
+const adopted = new Sheet({ mode: 'constructed' })
+```
+
+### `sheet.addMediaAttribute(mediaAttribute)`
+
+Sets the `media` attribute on the backing `<style>` tag.
+
+- Only available in `style-tag` mode.
+- Useful when the entire stylesheet should apply only to `print` or a single media query.
+
+```js
+const sheet = new Sheet()
+
+sheet.addMediaAttribute('(max-width: 60rem)')
+```
+
+### `sheet.getSheet()`
+
+Returns the underlying native `CSSStyleSheet` instance.
+
+```js
+const nativeSheet = sheet.getSheet()
+
+if (nativeSheet) {
+	console.log(nativeSheet.cssRules.length)
+}
+```
+
+### `sheet.add(selector, set, index?)`
+
+Inserts a CSS rule for a selector using an object of camelCase style declarations.
+
+- Property keys should follow the same naming style as `element.style`, such as `backgroundColor`.
+- If `index` is omitted, the rule is appended to the end of the stylesheet.
 
 ```js
 sheet.add('.card', {
-	width: '200px',
-	backgroundColor: 'black'
+	padding: '1rem',
+	backgroundColor: '#111827',
+	color: '#ffffff'
 })
-sheet.add('.inserted', { color: 'red' }, 0)  // insert at index 0
+
+sheet.add('.card--first', { order: '0' }, 0)
 ```
 
-The keys must use the same naming convention as `element.style`
-(camelCase, for example `backgroundColor`, `borderRadius`, etc.).
+### `sheet.addClass(set)`
 
----
+Generates a random class name, inserts a rule for it, and returns the class name without a leading dot.
 
-### sheet.addClass(set) → string
-
-Creates a new class with a random name and returns it.
+- The returned value is intended for `element.classList.add(...)`.
+- Internally, dyss prefixes the generated name with `.` before inserting the rule.
 
 ```js
-const cls = sheet.addClass({ color: 'red' })
+const pillClass = sheet.addClass({
+	padding: '0.4rem 0.7rem',
+	borderRadius: '999px',
+	backgroundColor: '#c21f2b',
+	color: '#ffffff'
+})
+
+button.classList.add(pillClass)
 ```
 
----
+### `sheet.updateSet(selector, set)`
 
-### sheet.getSheet() → CSSStyleSheet | null
+Merges declarations into an existing rule, or creates the rule if it does not exist yet.
 
-Returns the underlying stylesheet instance.
-
----
-
-### sheet.addMediaAttribute(value)
-
-Sets the `media` attribute on the underlying `<style>` element. This is only available in `style-tag` mode.
+- This preserves existing properties that are not mentioned in the new set.
+- Values ending in `!important` are applied with `style.setProperty(..., 'important')`.
 
 ```js
-sheet.addMediaAttribute('(max-width: 600px)')
+sheet.updateSet('.card', {
+	backgroundColor: '#2563eb',
+	borderRadius: '1rem',
+	color: '#ffffff !important'
+})
 ```
 
----
+### `sheet.replaceSet(selector, set)`
 
-### sheet.addMedia(mediaQuery, selector, set)
+Removes every existing declaration from a rule, then applies the new set.
 
-Adds a rule inside an `@media` block. Creates the block if it does not exist; reuses it for the same query.
+- This is a full replacement, not a merge.
+- If the selector is missing, dyss creates a new rule first.
 
 ```js
-sheet.addMedia('(max-width: 600px)', '.box', { padding: '8px' })
+sheet.replaceSet('.card', {
+	display: 'grid',
+	gap: '0.75rem'
+})
 ```
 
----
+### `sheet.remove(selector)`
 
-### sheet.addPseudo(selector, pseudo, set)
+Deletes the matching rule from the stylesheet.
 
-Adds a rule for a selector with a pseudo-class or pseudo-element (e.g. `:hover`, `::before`).
+- The lookup includes top-level rules and rules nested inside `@media` blocks.
 
 ```js
-sheet.addPseudo('.btn', ':hover', { backgroundColor: 'blue' })
-sheet.addPseudo('.link', '::after', { content: '""' })
+sheet.remove('.card')
 ```
 
----
+### `sheet.removeClass(className)`
 
-### sheet.updateSet(selector, set)
+Deletes a class rule using either the raw class name or the dotted selector form.
 
-Merges properties into an existing rule. If the selector does not exist, a new rule is created.
-
----
-
-### sheet.replaceSet(selector, set)
-
-Replaces all properties of an existing rule with the new set. If the selector does not exist, a new rule is created.
-
----
-
-### sheet.get(selector) → CSSStyleRule | null
-
-Returns the rule for the given selector (including rules inside `@media`), or `null` if not found.
+- Passing `badge` and `.badge` both target the same `.badge` rule.
 
 ```js
-const rule = sheet.get('.box')
-if (rule) console.log(rule.style.color)
+const badgeClass = sheet.addClass({ color: '#ffffff' })
+
+sheet.removeClass(badgeClass)
+sheet.removeClass('.legacy-badge')
 ```
 
----
+### `sheet.destroy()`
 
-### sheet.remove(selector)
+Cleans up the stylesheet and clears the instance references.
 
-Removes the rule for the given selector (including rules inside `@media`).
-
----
-
-### sheet.removeClass(className)
-
-Removes the rule for a class. Pass the class name with or without the leading dot.
+- In `style-tag` mode, dyss removes the injected `<style>` element from the DOM.
+- In `constructed` mode, dyss removes the sheet from `document.adoptedStyleSheets`.
 
 ```js
-const cls = sheet.addClass({ color: 'red' })
-// later:
-sheet.removeClass(cls)
+const sheet = new Sheet()
+
+sheet.add('.toast', { opacity: '1' })
+
+// later, during teardown
+sheet.destroy()
 ```
 
----
+### `sheet.addMedia(mediaQuery, selector, set)`
 
-### sheet.destroy()
+Adds a selector rule inside an `@media` block, creating the media block on first use.
 
-Removes the `<style>` element or unregisters the constructed stylesheet, then nulls the instance references.
-
----
-
-### !important
-
-You can use `!important` in property values; it is preserved when adding and applied when updating.
+- Reuses an existing `@media` rule when the same media query string is used again.
+- Rules inside the block are appended in insertion order.
 
 ```js
-sheet.add('.override', { color: 'red !important' })
-sheet.updateSet('.override', { color: 'blue !important' })
+sheet.addMedia('(max-width: 48rem)', '.card', {
+	padding: '0.75rem',
+	fontSize: '0.95rem'
+})
+```
+
+### `sheet.addPseudo(selector, pseudo, set)`
+
+Adds a rule for a pseudo-class or pseudo-element.
+
+- The `pseudo` argument may be passed as `hover` or `:hover`.
+- Pseudo-elements such as `::before` also work.
+
+```js
+sheet.addPseudo('.button', ':hover', {
+	backgroundColor: '#1a2747',
+	color: '#ffffff'
+})
+
+sheet.addPseudo('.button', '::before', {
+	content: '""',
+	display: 'block'
+})
+```
+
+### `sheet.get(selector)`
+
+Returns the matching `CSSStyleRule`, or `null` when no rule matches.
+
+- Like `remove()`, this searches top-level rules and rules nested inside media queries.
+- Once you have the rule, you can inspect `rule.style`, `rule.cssText`, and other CSSOM properties.
+
+```js
+const rule = sheet.get('.card')
+
+if (rule) {
+	console.log(rule.style.backgroundColor)
+}
 ```
 
 ---
