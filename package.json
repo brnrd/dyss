@@ -3,11 +3,12 @@
   "version": "1.2.0",
   "description": "Dynamically create and update CSS stylesheets from JS",
   "license": "Unlicense",
-  "author": "Bernard Debecker",
+  "author": "Bernard Debecker <bernard@vegetalope.com> (https://vegetalope.com)",
   "type": "module",
   "main": "./dist/dyss.js",
   "exports": {
-    ".": "./dist/dyss.js"
+    ".": "./dist/dyss.js",
+    "./min": "./dist/dyss.min.js"
   },
   "files": [
     "dist",
@@ -36,7 +37,7 @@
   "bugs": {
     "url": "https://github.com/brnrd/dyss/issues"
   },
-  "homepage": "https://github.com/brnrd/dyss#readme",
+  "homepage": "https://vegetalope.com/build/dyss/docs",
   "keywords": [
     "css",
     "stylesheet",
